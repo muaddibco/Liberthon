@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Content="{Binding Poll.Title}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Label Grid.Row="0" Content="{Binding Poll.Title}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Poll.VoteSets}" >
             <ListView.ItemTemplate>
