@@ -273,6 +273,7 @@
     <Compile Include="ViewModels\RegistrationViewModel.cs" />
     <Compile Include="ViewModels\ResultsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\VoteViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">
@@ -283,6 +284,9 @@
     </Compile>
     <Compile Include="Views\RegistrationWindow.xaml.cs">
       <DependentUpon>RegistrationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VoteWindow.xaml.cs">
+      <DependentUpon>VoteWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -305,6 +309,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RegistrationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VoteWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -340,11 +348,23 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Wist\Wist.Client\Wist.Client.Common\Wist.Client.Common.csproj">
+    <ProjectReference Include="..\..\Wist.Common\BlockLattice\Wist.BlockLattice.Core\Wist.BlockLattice.Core.csproj">
+      <Project>{664a491b-be3c-4998-8b30-b2a769d4f9a3}</Project>
+      <Name>Wist.BlockLattice.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Wist.Common\Crypto\Wist.Crypto\Wist.Crypto.csproj">
+      <Project>{8d4acf26-1f87-4698-b3d3-1ff17208a7cb}</Project>
+      <Name>Wist.Crypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Wist.Common\Network\Wist.Proto\Wist.Proto.csproj">
+      <Project>{ae833720-db8f-4e1c-a4d3-591fc9ab5976}</Project>
+      <Name>Wist.Proto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wist.Client.Common\Wist.Client.Common.csproj">
       <Project>{7b9cecd3-4545-4ba9-8b40-f7aabc545087}</Project>
       <Name>Wist.Client.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Wist\Wist.Common\Wist.Core\Wist.Core.csproj">
+    <ProjectReference Include="..\..\Wist.Common\Wist.Core\Wist.Core.csproj">
       <Project>{C8F6EE4D-D928-4B08-A797-D438C0F8F242}</Project>
       <Name>Wist.Core</Name>
     </ProjectReference>

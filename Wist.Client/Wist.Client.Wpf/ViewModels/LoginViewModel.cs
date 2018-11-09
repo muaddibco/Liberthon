@@ -34,15 +34,15 @@ namespace Wist.Client.Wpf.ViewModels
         public string privateKey { get; set; }
         public string publicKey { get; set; }
 
-        public ICommand UtxoLoginCommand
+        public ICommand VoteCommand
         {
             get => new RelayCommand(() => 
             {
                 _clientState.InitializeConfidential(ConfidentialAssetsHelper.GetRandomSeed(), ConfidentialAssetsHelper.GetRandomSeed());
-                new PollWindow().ShowDialog();
+                new VoteWindow().ShowDialog();
             });
         }
-        public ICommand AccountBasedLoginCommand
+        public ICommand CreatePollCommand
         {
             get => new RelayCommand(() => 
             {
