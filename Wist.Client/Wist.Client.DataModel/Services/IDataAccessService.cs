@@ -26,6 +26,7 @@ namespace Wist.Client.DataModel.Services
         List<ulong> GetUtxoUnspentBlockTagIds();
         List<UtxoUnspentBlock> GetUtxoUnspentBlocksByTagId(ulong tagId);
         List<TransactionalIncomingBlock> GetIncomingBlocksByBlockType(ushort blockType);
+        List<UtxoIncomingBlock> GetIncomingUtxoBlocksByType(ushort blockType);
         void StoreUtxoOutput(ulong tagId, Span<byte> commitment, Span<byte> destinationKey);
         int GetTotalUtxoOutputsAmount(ulong tagId);
         void GetUtxoOutputByIndex(out Span<byte> commitment, out Span<byte> destinationKey, ulong tagId, int index);

@@ -11,12 +11,19 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
 using Wist.Crypto.ConfidentialAssets;
 using System.Collections.ObjectModel;
+using Wist.Client.Common.Interfaces;
+using Wist.Core.States;
+using Wist.Client.Common.Services;
+using System.Windows;
 
 namespace Wist.Client.Wpf.ViewModels
 {
 
     public class PollViewModel : ViewModelBase
     {
+        private readonly IWalletManager _walletManager;
+        private readonly IClientState _clientState;
+
         #region ============================================ MEMBERS ==================================================
 
         private IPoll _selectedPollBottom;
@@ -26,10 +33,12 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ========================================== CONSTRUCTORS ===============================================
 
-        public PollViewModel()
+        public PollViewModel(IWalletManager walletManager, IStatesRepository statesRepository)
         {
             InitPoll();
             Polls = new ObservableCollection<IPoll>();
+            _walletManager = walletManager;
+            _clientState = statesRepository.GetInstance<IClientState>();
         }
 
         #endregion
@@ -66,6 +75,12 @@ namespace Wist.Client.Wpf.ViewModels
         public string VoteItemLabel { get; set; }
         public string Id { get; set; }
 
+        public byte[] PublicKey => _clientState.GetPublicKeyHash();
+
+        public ICommand CopyPublicKeyToClipboard => new RelayCommand(() => 
+        {
+            Clipboard.SetText(PublicKey.ToHexString());
+        });
 
         public VoteItem VoteItem { get; set; }
 

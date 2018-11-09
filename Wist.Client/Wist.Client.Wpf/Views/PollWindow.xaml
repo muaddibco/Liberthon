@@ -19,8 +19,14 @@
             
             
             <TabItem Header="Create Polls">
+
                 <StackPanel Orientation="Vertical"  Margin="10">
                     <StackPanel Margin="10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Public Key Hash: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding PublicKey, Converter={StaticResource byteArrayToStringConverter}}" VerticalAlignment="Center"/>
+                            <Button Content="Copy" Command="{Binding CopyPublicKeyToClipboard}" Margin="5, 2" VerticalAlignment="Center"/>
+                        </StackPanel>
                         <StackPanel Orientation="Vertical">
                             <Label  Content="What would be the poll subject?"/>
                             <Grid>

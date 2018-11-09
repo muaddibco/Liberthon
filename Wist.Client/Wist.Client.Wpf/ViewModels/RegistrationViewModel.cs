@@ -13,6 +13,8 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
 using Wist.Client.Common.Interfaces;
 using System.Collections.ObjectModel;
+using Wist.Core.States;
+using Wist.Client.Common.Services;
 
 namespace Wist.Client.Wpf.ViewModels
 {
@@ -22,6 +24,7 @@ namespace Wist.Client.Wpf.ViewModels
 
         private readonly IDataAccessService _dataAccessService;
         private readonly IWalletManager _walletManager;
+        private readonly IClientState _clientState;
         private User _user;
 
         private ObservableCollection<User> _registeredUsers;
@@ -30,10 +33,10 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ========================================== CONSTRUCTORS ===============================================
 
-        public RegistrationViewModel(IDataAccessService dataAccessService, IWalletManager walletManager)
+        public RegistrationViewModel(IDataAccessService dataAccessService, IWalletManager walletManager, IStatesRepository statesRepository)
         {
             User = new User();
-
+            _clientState = statesRepository.GetInstance<IClientState>();
             RegisteredUsers = new ObservableCollection<User>();
 
             _dataAccessService = dataAccessService;
@@ -46,7 +49,7 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ======================================== PUBLIC FUNCTIONS =============================================
 
-        public byte[] MyProperty { get; set; }
+        public byte[] PublicKey => _clientState.GetPublicKeyHash();
 
         public User User
         {

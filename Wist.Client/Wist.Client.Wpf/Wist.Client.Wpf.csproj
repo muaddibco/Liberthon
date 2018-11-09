@@ -247,9 +247,6 @@
     <Reference Include="Wist.BlockLattice.Core">
       <HintPath>..\..\..\Wist\Wist.Common\BlockLattice\Wist.BlockLattice.Core\bin\Debug\netstandard2.0\Wist.BlockLattice.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Wist.Client.DataModel">
-      <HintPath>..\..\..\Wist\Wist.Client\Wist.Client.DataModel\bin\Debug\netstandard2.0\Wist.Client.DataModel.dll</HintPath>
-    </Reference>
     <Reference Include="Wist.Crypto">
       <HintPath>..\..\..\Wist\Wist.Common\Crypto\Wist.Crypto\bin\Debug\netstandard2.0\Wist.Crypto.dll</HintPath>
     </Reference>
@@ -274,6 +271,7 @@
     <Compile Include="ViewModels\PollViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegistrationViewModel.cs" />
+    <Compile Include="ViewModels\ResultsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -349,6 +347,10 @@
     <ProjectReference Include="..\..\..\Wist\Wist.Common\Wist.Core\Wist.Core.csproj">
       <Project>{C8F6EE4D-D928-4B08-A797-D438C0F8F242}</Project>
       <Name>Wist.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Wist.Client.DataModel\Wist.Client.DataModel.csproj">
+      <Project>{91e03231-0b4b-4888-9b75-19f9abf809a2}</Project>
+      <Name>Wist.Client.DataModel</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
