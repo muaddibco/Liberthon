@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using CommonServiceLocator;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Unity;
+using Wist.Client.Common.Communication;
 using Wist.Core.Architecture;
+using Wist.Core.Cryptography;
 
 namespace Wist.Client.Wpf
 {
@@ -16,7 +19,7 @@ namespace Wist.Client.Wpf
         }
         protected override IEnumerable<string> EnumerateCatalogItems(string rootFolder)
         {
-            return base.EnumerateCatalogItems(rootFolder).Concat(new string[] { "Wist.Client.DataModel.dll", "Wist.Client.Common.dll","Wist.Crypto.dll", "Wist.BlockLattice.Core.dll" });
+            return base.EnumerateCatalogItems(rootFolder).Concat(new string[] { "Wist.Client.DataModel.dll", "Wist.Client.Common.dll","Wist.Crypto.dll", "Wist.BlockLattice.Core.dll", "Wist.Network.dll" });
         }
 
         public new IUnityContainer CreateContainer()
@@ -40,6 +43,14 @@ namespace Wist.Client.Wpf
         {
             base.InitializeConfiguration();
             base.RunInitializers();
+        }
+
+        public override void Run(IDictionary<string, string> args = null)
+        {
+            base.Run(args);
+
+            ServiceLocator.Current.GetInstance<INetworkSynchronizer>().Initialize(_cancellationToken);
+            ServiceLocator.Current.GetInstance<INetworkSynchronizer>().Start();
         }
     }
 }

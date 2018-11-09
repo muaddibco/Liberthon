@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Wist.Client.Common.Services;
 using Wist.Client.Wpf.Interfaces;
 using Wist.Client.Wpf.Views;
+using Wist.Core.Cryptography;
 using Wist.Core.States;
 using Wist.Crypto.ConfidentialAssets;
 
@@ -14,14 +15,16 @@ namespace Wist.Client.Wpf.ViewModels
         #region ============================================ MEMBERS ==================================================
 
         private readonly IClientState _clientState;
+        private readonly ICryptoService _cryptoService;
 
         #endregion
 
         #region ========================================== CONSTRUCTORS ===============================================
-        
-        public LoginViewModel(IStatesRepository statesRepository)
+
+        public LoginViewModel(IStatesRepository statesRepository, ICryptoService cryptoService)
         {
             _clientState = statesRepository.GetInstance<IClientState>();
+            _cryptoService = cryptoService;
         }
 
         #endregion
@@ -43,7 +46,9 @@ namespace Wist.Client.Wpf.ViewModels
         {
             get => new RelayCommand(() => 
             {
-                _clientState.InitializeAccountBased(ConfidentialAssetsHelper.GetRandomSeed());
+                byte[] seed = ConfidentialAssetsHelper.GetRandomSeed();
+                _cryptoService.Initialize(seed);
+                _clientState.InitializeAccountBased(seed);
                 new PollWindow().ShowDialog();
             });
         }
@@ -51,6 +56,9 @@ namespace Wist.Client.Wpf.ViewModels
         public ICommand RegisterUserCommand =>
             new RelayCommand(() => 
             {
+                byte[] seed = ConfidentialAssetsHelper.GetRandomSeed();
+                _cryptoService.Initialize(seed);
+                _clientState.InitializeAccountBased(seed);
                 new RegistrationWindow().Show();
             });
 

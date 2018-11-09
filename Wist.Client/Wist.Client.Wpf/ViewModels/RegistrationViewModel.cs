@@ -11,6 +11,8 @@ using Wist.Client.DataModel.Model;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
+using Wist.Client.Common.Interfaces;
+using System.Collections.ObjectModel;
 
 namespace Wist.Client.Wpf.ViewModels
 {
@@ -19,21 +21,23 @@ namespace Wist.Client.Wpf.ViewModels
         #region ============================================ MEMBERS ==================================================
 
         private readonly IDataAccessService _dataAccessService;
+        private readonly IWalletManager _walletManager;
+        private User _user;
 
-        private ICollection<User> _registeredUsers;
+        private ObservableCollection<User> _registeredUsers;
 
         #endregion
 
         #region ========================================== CONSTRUCTORS ===============================================
 
-        public RegistrationViewModel(IDataAccessService dataAccessService)
+        public RegistrationViewModel(IDataAccessService dataAccessService, IWalletManager walletManager)
         {
             User = new User();
 
-            _registeredUsers = new List<User>();
+            RegisteredUsers = new ObservableCollection<User>();
 
             _dataAccessService = dataAccessService;
-
+            _walletManager = walletManager;
             InitData();
 
         }
@@ -42,22 +46,56 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ======================================== PUBLIC FUNCTIONS =============================================
 
-        public User User { get; set; }
+        public byte[] MyProperty { get; set; }
+
+        public User User
+        {
+            get
+            {
+                return _user;
+            }
+            set
+            {
+                _user = value;
+                RaisePropertyChanged(() => User);
+            }
+        }
 
         public ICommand SubmitUser
         {
             get => new RelayCommand(() =>
             {
-                _registeredUsers.Add(new User
+                RegisteredUsers.Add(new User
                 {
                     Address = User.Address,
                     FirstName = User.FirstName,
                     LastName = User.LastName,
                     Id = User.Id
                 });
+
                 User = new User();
             });
         }
+
+        public ICommand SubmitIdCards
+        {
+            get => new RelayCommand(() => 
+            {
+                _walletManager.IssueAssets(
+                    "Creation of ID cards",
+                    RegisteredUsers.Select(
+                        r =>
+                        {
+                            byte[] assetId = new byte[32];
+                            Array.Copy(BitConverter.GetBytes(r.Id), 0, assetId, 0, sizeof(uint));
+
+                            return assetId;
+                        }).ToArray(),
+                    RegisteredUsers.Select(
+                        r => string.Join(" ", r.FirstName, r.LastName)).ToArray(), 1);
+            });
+        }
+        public ObservableCollection<User> RegisteredUsers { get => _registeredUsers; set => _registeredUsers = value; }
 
         private void InitData()
         {
