@@ -10,21 +10,17 @@ using Wist.Core.Identity;
 
 namespace Wist.BlockLattice.Core.Serializers.UtxoConfidential
 {
-    public abstract class UtxoConfidentialSerializerBase<T> : SerializerBase<T>, IUtxoConfidentialSerializer where T : UtxoConfidentialBase
+    public abstract class UtxoConfidentialSerializerBase<T> : SerializerBase<T> where T : UtxoConfidentialBase
     {
-        protected readonly IUtxoConfidentialCryptoService _cryptoService;
         protected readonly IIdentityKeyProvider _transactionKeyIdentityKeyProvider;
         protected readonly IHashCalculation _transactionKeyHashCalculation;
 
         protected int _prevSecretKeyIndex;
         protected byte[] _prevSecretKey;
-        protected IKey _receiverViewKey;
-        protected IKey _receiverSpendKey;
 
-        public UtxoConfidentialSerializerBase(PacketType packetType, ushort blockType, IUtxoConfidentialCryptoService cryptoService, IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, IHashCalculationsRepository hashCalculationsRepository) 
+        public UtxoConfidentialSerializerBase(PacketType packetType, ushort blockType, IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, IHashCalculationsRepository hashCalculationsRepository) 
             : base(packetType, blockType)
         {
-            _cryptoService = cryptoService;
             _transactionKeyIdentityKeyProvider = identityKeyProvidersRegistry.GetTransactionsIdenityKeyProvider();
             _transactionKeyHashCalculation = hashCalculationsRepository.Create(HashType.MurMur);
         }
@@ -86,13 +82,13 @@ namespace Wist.BlockLattice.Core.Serializers.UtxoConfidential
 
             byte[] body = _binaryReader.ReadBytes((int)bodyLength);
 
-            RingSignature[] ringSignatures = _cryptoService.Sign(body, _block.KeyImage.Value.ToArray(), _block.PublicKeys, _prevSecretKey, _prevSecretKeyIndex);
+            RingSignature[] ringSignatures = _block.Signatures; // _cryptoService.Sign(body, _block.KeyImage.Value.ToArray(), _block.PublicKeys, _prevSecretKey, _prevSecretKeyIndex);
 
             _binaryWriter.Write((ushort)ringSignatures.Length);
 
             foreach (IKey key in _block.PublicKeys)
             {
-                _binaryWriter.Write(key.ArraySegment.Array, key.ArraySegment.Offset, key.ArraySegment.Count - key.ArraySegment.Offset);
+                _binaryWriter.Write(key.ArraySegment.Array, key.ArraySegment.Offset, key.ArraySegment.Count);
             }
 
             foreach (var signature in ringSignatures)
@@ -109,16 +105,6 @@ namespace Wist.BlockLattice.Core.Serializers.UtxoConfidential
 
             byte[] hash = _transactionKeyHashCalculation.CalculateHash(_block.RawData.ToArray());
             _block.Key = _transactionKeyIdentityKeyProvider.GetKey(hash);
-        }
-
-        public void Initialize(UtxoConfidentialBase utxoConfidentialBase, IKey receiverViewKey, IKey receiverSpendKey, byte[] prevSecretKey, int prevSecretKeyIndex)
-        {
-            _receiverViewKey = receiverViewKey;
-            _receiverSpendKey = receiverSpendKey;
-            _prevSecretKey = prevSecretKey;
-            _prevSecretKeyIndex = prevSecretKeyIndex;
-
-            Initialize(utxoConfidentialBase);
         }
 
         #endregion Private Functions

@@ -59,12 +59,16 @@ namespace Wist.Node.Core.Synchronization
             //    _syncProducingCancellation?.Cancel();
             //    _syncProducingCancellation = null;
             //}
+            int delay = 1;
+
+            if (_syncProducingCancellation != null)
+            {
+                delay = Math.Max((int)(60000 * round - (DateTime.Now - (_synchronizationContext.LastBlockDescriptor?.UpdateTime ?? DateTime.Now)).TotalMilliseconds), 0);
+            }
 
             _syncProducingCancellation = new CancellationTokenSource();
 
-            int delay = Math.Max((int)(60000 * round - (DateTime.Now - (_synchronizationContext.LastBlockDescriptor?.UpdateTime ?? DateTime.Now)).TotalMilliseconds), 0);
-
-            if (delay > 0)
+            //if (delay > 0)
             {
                 Task.Delay(delay, _syncProducingCancellation.Token)
                     .ContinueWith(t =>

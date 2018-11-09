@@ -14,11 +14,13 @@ namespace Wist.BlockLattice.Core.Serializers.Signed.Registry
     public class RegistryFullBlockSerializer : SyncSupportSerializerBase<RegistryFullBlock>
     {
         private readonly RegistryRegisterBlockSerializer _transactionRegisterBlockSerializer;
+        private readonly RegistryRegisterUtxoConfidentialBlockSerializer _registryRegisterUtxoConfidentialBlockSerializer;
 
         public RegistryFullBlockSerializer(ICryptoService cryptoService, IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, IHashCalculationsRepository hashCalculationsRepository) 
             : base(PacketType.Registry, BlockTypes.Registry_FullBlock, cryptoService, identityKeyProvidersRegistry, hashCalculationsRepository)
         {
             _transactionRegisterBlockSerializer = new RegistryRegisterBlockSerializer(cryptoService, identityKeyProvidersRegistry, hashCalculationsRepository);
+            _registryRegisterUtxoConfidentialBlockSerializer = new RegistryRegisterUtxoConfidentialBlockSerializer(identityKeyProvidersRegistry, hashCalculationsRepository);
         }
 
         protected override void WriteBody(BinaryWriter bw)
@@ -30,8 +32,16 @@ namespace Wist.BlockLattice.Core.Serializers.Signed.Registry
             foreach (var item in _block.TransactionHeaders)
             {
                 bw.Write(item.Key);
-                _transactionRegisterBlockSerializer.Initialize(item.Value as BlockBase);
-                bw.Write(_transactionRegisterBlockSerializer.GetBytes());
+                if (item.Value.BlockType == BlockTypes.Registry_Register)
+                {
+                    _transactionRegisterBlockSerializer.Initialize(item.Value as BlockBase);
+                    bw.Write(_transactionRegisterBlockSerializer.GetBytes());
+                }
+                else if(item.Value.BlockType == BlockTypes.Registry_RegisterUtxoConfidential)
+                {
+                    _registryRegisterUtxoConfidentialBlockSerializer.Initialize(item.Value as BlockBase);
+                    bw.Write(_registryRegisterUtxoConfidentialBlockSerializer.GetBytes());
+                }
             }
 
             bw.Write(_block.ShortBlockHash);

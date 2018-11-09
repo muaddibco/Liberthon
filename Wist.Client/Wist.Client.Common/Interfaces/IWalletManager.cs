@@ -18,12 +18,10 @@ namespace Wist.Client.Common.Interfaces
 
         bool IssueAssets(string issuanceInfo, byte[][] assetIds, string[] assetInfos, ulong tagId);
 
-        bool SendAssetToUtxo(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver);
+        bool SendAssetToUtxo(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver, byte[] sk = null);
 
-        bool SendAssetTransition(byte[] assetCommitment, byte[] blindingFactor, Account target);
+        bool SendAssetTransition(byte[] assetId, byte[] transactionKey, byte[] assetCommitment, byte[] prevDestinationKey, ulong tagId, Account target);
 
-        BlockBase CreateRegisterBlock(TransactionalBlockBase transactionalBlock, byte[] target);
-
-        BlockBase CreateUtxoRegisterBlock(UtxoConfidentialBase confidentialBase);
+        bool SendAcceptAsset(byte[] transactionKey, byte[] assetCommitment, byte[] blindingFactor, byte[] assetId, ulong tagId);
     }
 }

@@ -5,5 +5,6 @@
         string Label { get; set; }
         bool IsSelected { get; set; }
         byte[] Id { get; set; }
+        object Model { get; set; }
     }
 }

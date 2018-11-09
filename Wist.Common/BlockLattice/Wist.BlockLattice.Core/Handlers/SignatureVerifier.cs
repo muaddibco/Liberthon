@@ -6,7 +6,7 @@ using Wist.Core.Logging;
 
 namespace Wist.BlockLattice.Core.Handlers
 {
-    [RegisterExtension(typeof(ICoreVerifier), Lifetime = LifetimeManagement.TransientPerResolve)]
+    //[RegisterExtension(typeof(ICoreVerifier), Lifetime = LifetimeManagement.TransientPerResolve)]
     public class SignatureVerifier : ICoreVerifier
     {
         private readonly ICryptoService _cryptoService;

@@ -30,5 +30,6 @@ namespace Wist.Client.DataModel.Services
         void StoreUtxoOutput(ulong tagId, Span<byte> commitment, Span<byte> destinationKey);
         int GetTotalUtxoOutputsAmount(ulong tagId);
         void GetUtxoOutputByIndex(out Span<byte> commitment, out Span<byte> destinationKey, ulong tagId, int index);
+        List<TransactionalOutcomingBlock> GetOutcomingTransactionBlocks();
     }
 }

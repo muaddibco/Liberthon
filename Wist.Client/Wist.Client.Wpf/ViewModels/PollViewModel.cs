@@ -49,11 +49,14 @@ namespace Wist.Client.Wpf.ViewModels
             _dataAccessService = dataAccessService;
             _blockParsersRepositoriesRepository = blockParsersRepositoriesRepository;
             _clientState = statesRepository.GetInstance<IClientState>();
+            ResultsViewModel = new ResultsViewModel(dataAccessService, walletManager, blockParsersRepositoriesRepository, statesRepository);
         }
 
         #endregion
 
         #region ======================================== PUBLIC FUNCTIONS =============================================
+
+        public ResultsViewModel ResultsViewModel { get; set; }
 
         public string PollName { get; set; }
 
@@ -144,39 +147,47 @@ namespace Wist.Client.Wpf.ViewModels
             {
                 Random random = new Random();
 
-                IPoll poll = Polls[0];
-                foreach (var voteSet in poll.VoteSets)
+                foreach (IPoll poll in Polls)
                 {
-                    _walletManager.IssueAssets($"{poll.Title}|{voteSet.Request}",
-                        voteSet.VoteItems.Select(v => v.Id).ToArray(),
-                        voteSet.VoteItems.Select(v => v.Label).ToArray(), poll.TagId);
+                    foreach (var voteSet in poll.VoteSets)
+                    {
+                        _walletManager.IssueAssets($"{poll.Title}|{voteSet.Request}",
+                            voteSet.VoteItems.Select(v => v.Id).ToArray(),
+                            voteSet.VoteItems.Select(v => v.Label).ToArray(), poll.TagId);
+                    }
                 }
-
             });
 
         public ICommand DistributePoll => new RelayCommand(() => 
         {
-            IPoll poll = Polls[0];
-            List<TransactionalIncomingBlock> incomingBlocks = _dataAccessService.GetIncomingBlocksByBlockType(BlockTypes.Transaction_IssueAssets).Where(b => b.TagId == 1).ToList();
-            byte[][] assetIds = poll.VoteSets.SelectMany(v => v.VoteItems.Select(i => i.Id)).ToArray();
-
-            foreach (var item in incomingBlocks)
+            foreach (IPoll poll in Polls)
             {
-                IBlockParsersRepository blockParsersRepository = _blockParsersRepositoriesRepository.GetBlockParsersRepository(PacketType.Transactional);
-                IBlockParser blockParser = blockParsersRepository.GetInstance(item.BlockType);
-                IssueAssetsBlock issueAssetsBlock = (IssueAssetsBlock)blockParser.Parse(item.Content);
 
-                foreach (string info in issueAssetsBlock.IssuedAssetInfo)
+                List<TransactionalIncomingBlock> incomingBlocks = _dataAccessService.GetIncomingBlocksByBlockType(BlockTypes.Transaction_IssueAssets).Where(b => b.TagId == 1).ToList();
+                byte[][][] assetIdsBySets = poll.VoteSets.Select(v => v.VoteItems.Select(i => i.Id).ToArray()).ToArray();
+
+                foreach (var item in incomingBlocks)
                 {
-                    string[] parts = info.Split('|');
-                    string publicVK = parts[1];
-                    string publicSK = parts[2];
+                    IBlockParsersRepository blockParsersRepository = _blockParsersRepositoriesRepository.GetBlockParsersRepository(PacketType.Transactional);
+                    IBlockParser blockParser = blockParsersRepository.GetInstance(item.BlockType);
+                    IssueAssetsBlock issueAssetsBlock = (IssueAssetsBlock)blockParser.Parse(item.Content);
 
-                    ConfidentialAccount confidentialAccount = new ConfidentialAccount { PublicViewKey = publicVK.HexStringToByteArray(), PublicSpendKey = publicSK.HexStringToByteArray() };
-
-                    for (int i = 0; i < assetIds.Length; i++)
+                    foreach (string info in issueAssetsBlock.IssuedAssetInfo)
                     {
-                        _walletManager.SendAssetToUtxo(assetIds, i, SelectedPoll.TagId, confidentialAccount);
+                        string[] parts = info.Split('|');
+                        string publicVK = parts[1];
+                        string publicSK = parts[2];
+
+                        ConfidentialAccount confidentialAccount = new ConfidentialAccount { PublicViewKey = publicVK.HexStringToByteArray(), PublicSpendKey = publicSK.HexStringToByteArray() };
+
+                        for (int i = 0; i < assetIdsBySets.Length; i++)
+                        {
+                            byte[] sk = ConfidentialAssetsHelper.GetRandomSeed();
+                            for (int j = 0; j < assetIdsBySets[i].Length; j++)
+                            {
+                                _walletManager.SendAssetToUtxo(assetIdsBySets[i], j, SelectedPoll.TagId, confidentialAccount, sk);
+                            }
+                        }
                     }
                 }
             }

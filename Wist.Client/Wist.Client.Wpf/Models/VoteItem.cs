@@ -7,5 +7,6 @@ namespace Wist.Client.Wpf.Models
         public string Label { get; set; }
         public byte[] Id { get; set; }
         public bool IsSelected { get; set; }
+        public object Model { get; set; }
     }
 }

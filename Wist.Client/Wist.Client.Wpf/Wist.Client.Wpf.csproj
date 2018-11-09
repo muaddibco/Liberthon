@@ -244,15 +244,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Wist.BlockLattice.Core">
-      <HintPath>..\..\..\Wist\Wist.Common\BlockLattice\Wist.BlockLattice.Core\bin\Debug\netstandard2.0\Wist.BlockLattice.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Wist.Crypto">
-      <HintPath>..\..\..\Wist\Wist.Common\Crypto\Wist.Crypto\bin\Debug\netstandard2.0\Wist.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="Wist.Proto">
-      <HintPath>..\..\..\Wist\Wist.Common\Network\Wist.Proto\bin\Debug\netstandard2.0\Wist.Proto.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -342,9 +333,25 @@
       <Project>{664a491b-be3c-4998-8b30-b2a769d4f9a3}</Project>
       <Name>Wist.BlockLattice.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Wist.Common\BlockLattice\Wist.BlockLattice.Core\Wist.BlockLattice.Core.csproj">
+      <Project>{664a491b-be3c-4998-8b30-b2a769d4f9a3}</Project>
+      <Name>Wist.BlockLattice.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Wist.Common\Crypto\Wist.Crypto\Wist.Crypto.csproj">
       <Project>{8d4acf26-1f87-4698-b3d3-1ff17208a7cb}</Project>
       <Name>Wist.Crypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Wist.Common\Crypto\Wist.Crypto\Wist.Crypto.csproj">
+      <Project>{8d4acf26-1f87-4698-b3d3-1ff17208a7cb}</Project>
+      <Name>Wist.Crypto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Wist.Common\Network\Wist.Network\Wist.Network.csproj">
+      <Project>{bd6de0d7-98a7-4d35-895c-8409a99cc367}</Project>
+      <Name>Wist.Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Wist.Common\Network\Wist.Proto\Wist.Proto.csproj">
+      <Project>{ae833720-db8f-4e1c-a4d3-591fc9ab5976}</Project>
+      <Name>Wist.Proto</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Wist.Common\Network\Wist.Proto\Wist.Proto.csproj">
       <Project>{ae833720-db8f-4e1c-a4d3-591fc9ab5976}</Project>

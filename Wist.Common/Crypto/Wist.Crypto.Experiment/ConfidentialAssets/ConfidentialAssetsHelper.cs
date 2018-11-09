@@ -1295,5 +1295,56 @@ namespace Wist.Crypto.Experiment.ConfidentialAssets
         }
 
         #endregion Private Functions
+
+        public static bool IsDestinationKeyMine(byte[] destinationKey, byte[] transactionKey, byte[] secretViewKey, byte[] publicSpendKey)
+        {
+            GroupOperations.ge_frombytes(out GroupElementP3 transactionKeyP3, transactionKey, 0);
+            GroupOperations.ge_scalarmult(out GroupElementP2 fP2, secretViewKey, ref transactionKeyP3);
+
+            byte[] f = new byte[32];
+            GroupOperations.ge_tobytes(f, 0, ref fP2);
+
+            f = FastHash256(f);
+
+            GroupOperations.ge_scalarmult_base(out GroupElementP3 p3, f, 0);
+            GroupOperations.ge_frombytes(out GroupElementP3 publicSpendKeyP3, publicSpendKey, 0);
+            GroupOperations.ge_p3_to_cached(out GroupElementCached cached, ref publicSpendKeyP3);
+            GroupOperations.ge_add(out GroupElementP1P1 p1p1, ref p3, ref cached);
+            GroupOperations.ge_p1p1_to_p3(out GroupElementP3 destinationKey1P3, ref p1p1);
+
+            byte[] destinationKey1 = new byte[32];
+            GroupOperations.ge_p3_tobytes(destinationKey1, 0, ref destinationKey1P3);
+
+            return destinationKey.Equals32(destinationKey1);
+        }
+
+        public static byte[] GetDestinationKey(byte[] secretKey, byte[] publicViewKey, byte[] publicSpendKey)
+        {
+            GroupOperations.ge_frombytes(out GroupElementP3 publicViewKeyP3, publicViewKey, 0);
+            GroupOperations.ge_frombytes(out GroupElementP3 publicSpendKeyP3, publicSpendKey, 0);
+
+            GroupOperations.ge_scalarmult(out GroupElementP2 fP3, secretKey, ref publicViewKeyP3);
+            byte[] f = new byte[32];
+            GroupOperations.ge_tobytes(f, 0, ref fP3);
+            byte[] hs = FastHash256(f);
+
+            GroupOperations.ge_scalarmult_base(out GroupElementP3 hsG, hs, 0);
+            GroupOperations.ge_p3_to_cached(out GroupElementCached publicSpendKeyCached, ref publicSpendKeyP3);
+            GroupOperations.ge_add(out GroupElementP1P1 destinationKeyP1P1, ref hsG, ref publicSpendKeyCached);
+            GroupOperations.ge_p1p1_to_p3(out GroupElementP3 destinationKeyP3, ref destinationKeyP1P1);
+
+            byte[] spendKey = new byte[32];
+            GroupOperations.ge_p3_tobytes(spendKey, 0, ref destinationKeyP3);
+
+            return spendKey;
+        }
+        public static byte[] GetTrancationKey(byte[] secretKey)
+        {
+            GroupOperations.ge_scalarmult_base(out GroupElementP3 p3, secretKey, 0);
+            byte[] transactionKey = new byte[32];
+            GroupOperations.ge_p3_tobytes(transactionKey, 0, ref p3);
+
+            return transactionKey;
+        }
     }
 }

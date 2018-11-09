@@ -54,7 +54,7 @@ namespace Wist.BlockLattice.Core.Parsers.Registry
 
                 utxoConfidentialBase = registryRegisterUtxoConfidentialBlock;
 
-                return spanBody.Slice(4 + Globals.DEFAULT_HASH_SIZE + Globals.NODE_PUBLIC_KEY_SIZE);
+                return spanBody.Slice(readBytes);
             }
 
             throw new BlockVersionNotSupportedException(version, BlockType);
