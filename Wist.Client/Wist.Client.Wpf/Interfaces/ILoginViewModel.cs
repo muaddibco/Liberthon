@@ -7,13 +7,15 @@ namespace Wist.Client.Wpf.Interfaces
         string privateKey { get; set; }
         string publicKey { get; set; }
 
-        ICommand UtxoLoginCommand
+        ICommand VoteCommand
         {
             get;
         }
-        ICommand AccountBasedLoginCommand
+        ICommand CreatePollCommand
         {
             get;
         }
+
+        ICommand RegisterUserCommand { get; }
     }
 }

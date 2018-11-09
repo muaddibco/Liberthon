@@ -19,8 +19,8 @@
             <ColumnDefinition Width="0.3*" />
         </Grid.ColumnDefinitions>
         <Label Grid.ColumnSpan="3" Content="CHOOSE YOUR DESTINY!!!" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <Button Grid.Row="1" Grid.Column="0" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="Create a poll" Command="{Binding AccountBasedLoginCommand}"/>
-        <Button Grid.Row="1" Grid.Column="1" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Content="Vote!" Command="{Binding UtxoLoginCommand}"/>
+        <Button Grid.Row="1" Grid.Column="0" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="Create a poll" Command="{Binding CreatePollCommand}"/>
+        <Button Grid.Row="1" Grid.Column="1" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Content="Vote!" Command="{Binding VoteCommand}"/>
         <Button Grid.Row="1" Grid.Column="2" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Content="Register User" Command="{Binding RegisterUserCommand}"/>
     </Grid>
 </Window>

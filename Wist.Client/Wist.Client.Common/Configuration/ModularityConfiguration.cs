@@ -10,7 +10,7 @@ namespace Wist.Client.Common.Configuration
         public ModularityConfiguration(IApplicationContext applicationContext) : base(applicationContext, "modularity")
         {
         }
-
+        [Optional]
         public string[] Modules { get; set; }
     }
 }

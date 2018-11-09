@@ -16,6 +16,8 @@ namespace Wist.Client.Wpf.ViewModels
         public LoginViewModel LoginViewModel => ServiceLocator.Current.GetInstance<LoginViewModel>();
         public PollViewModel PollViewModel => ServiceLocator.Current.GetInstance<PollViewModel>();
         public RegistrationViewModel RegistrationViewModel => ServiceLocator.Current.GetInstance<RegistrationViewModel>();
+        public VoteViewModel VoteViewModel => ServiceLocator.Current.GetInstance<VoteViewModel>();
+
 
         public static void Cleanup()
         {
