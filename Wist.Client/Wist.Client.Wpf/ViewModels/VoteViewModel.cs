@@ -1,10 +1,14 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
+using Wist.Client.Common.Services;
 using Wist.Client.DataModel.Services;
 using Wist.Client.Wpf.Interfaces;
 using Wist.Client.Wpf.Models;
+using Wist.Core.States;
+using Wist.Core.ExtensionMethods;
 
 namespace Wist.Client.Wpf.ViewModels
 {
@@ -14,20 +18,36 @@ namespace Wist.Client.Wpf.ViewModels
 
         private readonly IDataAccessService _dataAccessService;
 
+        private readonly IClientState _clientState;
+
         #endregion
 
         #region ========================================== CONSTRUCTORS ===============================================
 
-        public VoteViewModel(IDataAccessService dataAccessService)
+        public VoteViewModel(IDataAccessService dataAccessService, IStatesRepository statesRepository)
         {
             GetPollData();
 
             _dataAccessService = dataAccessService;
+            _clientState = statesRepository.GetInstance<IClientState>();
         }
 
         #endregion
 
         #region ======================================== PUBLIC FUNCTIONS =============================================
+
+        public byte[] PublicViewKey => _clientState.GetPublicViewKey();
+        public byte[] PublicSpendKey => _clientState.GetPublicSpendKey();
+
+        public ICommand CopyPublicViewKey => new RelayCommand(() => 
+        {
+            Clipboard.SetText(PublicViewKey.ToHexString());
+        });
+
+        public ICommand CopyPublicSpendKey => new RelayCommand(() =>
+        {
+            Clipboard.SetText(PublicSpendKey.ToHexString());
+        });
 
         public IPoll Poll { get; set; }
 

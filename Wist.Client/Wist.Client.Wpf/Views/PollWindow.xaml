@@ -116,9 +116,11 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        
-        <Button Margin="10" Content="Update Blockchain" Background="DeepSkyBlue" Command="{Binding UpdateBlockchain}"/>
-    
+
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="10" Content="Issue Poll" Background="DeepSkyBlue" Command="{Binding IssuePoll}"/>
+            <Button Margin="10" Content="Distribute Poll" Background="DeepSkyBlue" Command="{Binding DistributePoll}"/>
+        </StackPanel>
     </StackPanel>
     
 </Window>

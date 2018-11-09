@@ -22,17 +22,13 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <Label Content="User Registration" HorizontalAlignment="Center" />
-            <TextBlock>
-                <Run Text="Public Key Hash: "/>
-                <Run Text="{Binding PublicKey, Converter={StaticResource ByteArrayToStringConverter}}"/>
-            </TextBlock>
-        </StackPanel>
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Content="User Registration" HorizontalAlignment="Center" />
 
         <Label Grid.Row="1" Content="ID" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.Id}" />
@@ -43,20 +39,31 @@
         <Label Grid.Row="3" Content="Last Name" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.LastName}" />
 
-        <Button Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="200" Content="Register" Command="{Binding SubmitUser}"/>
+        <Label Grid.Row="4" Content="Public View Key" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.PublicViewKey, Mode=TwoWay}" />
 
-        <ListView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding RegisteredUsers}">
+        <Label Grid.Row="5" Content="Public Spend Key" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.PublicSpendKey, Mode=TwoWay}" />
+
+        <Button Grid.ColumnSpan="2" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="200" Content="Register" Command="{Binding SubmitUser}"/>
+
+        <ListView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding RegisteredUsers}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Id}" Margin="5"/>
                         <TextBlock Text="{Binding FirstName}" Margin="5"/>
                         <TextBlock Text="{Binding LastName}" Margin="5"/>
+                        <TextBlock Text="{Binding PublicViewKey}" Margin="5"/>
+                        <TextBlock Text="{Binding PublicSpendKey}" Margin="5"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Height="50" Width="200" Content="Submit ID Cards" Command="{Binding SubmitIdCards}"/>
+        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Submit ID Cards" Command="{Binding SubmitIdCards}" Margin="5, 2"/>
+            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Distribute ID Cards" Command="{Binding DistributeIdCards}" Margin="5, 2"/>
+        </StackPanel>
     </Grid>
 </Window>
