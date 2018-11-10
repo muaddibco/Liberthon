@@ -3,24 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:viewModels="clr-namespace:Wist.Client.Wpf.ViewModels"
+        xmlns:vm="clr-namespace:Wist.Client.Wpf.ViewModels"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wist.Client.Wpf.Views"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="450" Width="800"
-        DataContext="{Binding LoginViewModel, Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen">
+        Title="Role Selection" Width="800" SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:LoginViewModel}}"  WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.3*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.3*" />
-            <ColumnDefinition Width="0.3*" />
-            <ColumnDefinition Width="0.3*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Label Grid.ColumnSpan="3" Content="CHOOSE YOUR DESTINY!!!" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <Button Grid.Row="1" Grid.Column="0" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="Create a poll" Command="{Binding CreatePollCommand}"/>
-        <Button Grid.Row="1" Grid.Column="1" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Content="Vote!" Command="{Binding VoteCommand}"/>
-        <Button Grid.Row="1" Grid.Column="2" Margin="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Content="Register User" Command="{Binding RegisterUserCommand}"/>
+        <Label Grid.ColumnSpan="3" Content="Select your role" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20"/>
+        <Button Grid.Row="1" Grid.Column="0" Margin="30" Height="200" Width="200" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding CreatePollCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+            <Button.Content>
+                <TextBlock Text="Election Committee" FontSize="20" />
+            </Button.Content>
+        </Button>
+        <Button Grid.Row="1" Grid.Column="1" Margin="30" Height="200" Width="200" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Content="Citizen" Command="{Binding VoteCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" FontSize="20"/>
+        <Button Grid.Row="1" Grid.Column="2" Margin="30" Height="200" Width="200" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding RegisterUserCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+            <Button.Content>
+                <TextBlock Text="Ministry of Internal Affairs" FontSize="20" TextWrapping="Wrap" TextAlignment="Center"/>
+            </Button.Content>
+        </Button>
     </Grid>
 </Window>

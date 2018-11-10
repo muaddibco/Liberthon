@@ -34,32 +34,39 @@ namespace Wist.Client.Wpf.ViewModels
         public string privateKey { get; set; }
         public string publicKey { get; set; }
 
+        public bool IsVoteSelected { get; set; }
+        public bool IsRegisterUserSelected { get; set; }
+        public bool IsCreatePollSelected { get; set; }
+
         public ICommand VoteCommand
         {
-            get => new RelayCommand(() => 
+            get => new RelayCommand<IClosable>(c => 
             {
                 _clientState.InitializeConfidential(ConfidentialAssetsHelper.GetRandomSeed(), ConfidentialAssetsHelper.GetRandomSeed());
-                new VoteWindow().ShowDialog();
+                IsVoteSelected = true;
+                c?.Close();
             });
         }
         public ICommand CreatePollCommand
         {
-            get => new RelayCommand(() => 
+            get => new RelayCommand<IClosable>(c => 
             {
                 byte[] seed = ConfidentialAssetsHelper.GetRandomSeed();
                 _cryptoService.Initialize(seed);
                 _clientState.InitializeAccountBased(seed);
-                new PollWindow().ShowDialog();
+                IsCreatePollSelected = true;
+                c?.Close();
             });
         }
 
         public ICommand RegisterUserCommand =>
-            new RelayCommand(() => 
+            new RelayCommand<IClosable>(c => 
             {
                 byte[] seed = ConfidentialAssetsHelper.GetRandomSeed();
                 _cryptoService.Initialize(seed);
                 _clientState.InitializeAccountBased(seed);
-                new RegistrationWindow().Show();
+                IsRegisterUserSelected = true;
+                c?.Close();
             });
 
 

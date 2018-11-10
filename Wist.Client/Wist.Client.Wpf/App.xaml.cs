@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Wist.Client.Common.Communication;
+using Wist.Client.Wpf.ViewModels;
 using Wist.Client.Wpf.Views;
 
 namespace Wist.Client.Wpf
@@ -35,6 +36,38 @@ namespace Wist.Client.Wpf
 
             ClientBootstrapper clientBootstrapper = new ClientBootstrapper(CancellationToken.None);
             clientBootstrapper.Run();
+
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            LoginWindow loginWindow = new LoginWindow();
+            MainWindow = loginWindow;
+            LoginViewModel loginViewModel = ServiceLocator.Current.GetInstance<LoginViewModel>();
+            loginWindow.DataContext = loginViewModel;
+            loginWindow.ShowDialog();
+
+            ShutdownMode = ShutdownMode.OnLastWindowClose;
+
+            if (loginViewModel.IsRegisterUserSelected)
+            {
+                RegistrationViewModel registrationViewModel = ServiceLocator.Current.GetInstance<RegistrationViewModel>();
+                MainWindow = new RegistrationWindow { DataContext = registrationViewModel };
+                MainWindow.ShowDialog();
+            }
+            else if(loginViewModel.IsCreatePollSelected)
+            {
+                PollViewModel pollViewModel = ServiceLocator.Current.GetInstance<PollViewModel>();
+                MainWindow = new PollWindow { DataContext = pollViewModel };
+                MainWindow.ShowDialog();
+            }
+            else if(loginViewModel.IsVoteSelected)
+            {
+                VoteViewModel voteViewModel = ServiceLocator.Current.GetInstance<VoteViewModel>();
+                MainWindow = new VoteWindow { DataContext = voteViewModel };
+                MainWindow.ShowDialog();
+            }
+            else
+            {
+                Shutdown();
+            }
         }
     }
 

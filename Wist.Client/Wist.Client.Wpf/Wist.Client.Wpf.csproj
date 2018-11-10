@@ -259,6 +259,7 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\VoteItem.cs" />
     <Compile Include="Models\VoteSet.cs" />
+    <Compile Include="ViewModels\IClosable.cs" />
     <Compile Include="ViewModels\PollViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegistrationViewModel.cs" />

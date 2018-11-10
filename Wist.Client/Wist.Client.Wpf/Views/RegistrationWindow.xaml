@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:Wist.Client.Wpf.Converters"
+        xmlns:vm="clr-namespace:Wist.Client.Wpf.ViewModels"
         xmlns:local="clr-namespace:Wist.Client.Wpf.Views"
         mc:Ignorable="d"
-        Title="RegistrationWindow" Height="350" Width="800"
-        DataContext="{Binding RegistrationViewModel, Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen">
+        Title="Citizens Management" Width="800"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:RegistrationViewModel}}" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <converters:ByteArrayToStringConverter x:Key="ByteArrayToStringConverter"/>
     </Window.Resources>
@@ -33,21 +34,21 @@
         <Label Grid.Row="1" Content="ID" VerticalAlignment="Center"/>
         <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding User.Id}" Margin="5, 0"/>
 
-        <Label Grid.Row="2" Content="First Name" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.FirstName}" />
+        <Label Grid.Row="2" Content="First Name" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding User.FirstName}" Margin="5, 0"/>
 
-        <Label Grid.Row="3" Content="Last Name" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.LastName}" />
+        <Label Grid.Row="3" Content="Last Name" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding User.LastName}" Margin="5, 0"/>
 
-        <Label Grid.Row="4" Content="Public View Key" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.PublicViewKey, Mode=TwoWay}" />
+        <Label Grid.Row="4" Content="Public View Key" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding User.PublicViewKey, Mode=TwoWay}" Margin="5, 0"/>
 
-        <Label Grid.Row="5" Content="Public Spend Key" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.PublicSpendKey, Mode=TwoWay}" />
+        <Label Grid.Row="5" Content="Public Spend Key" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding User.PublicSpendKey, Mode=TwoWay}" Margin="5, 0"/>
 
-        <Button Grid.ColumnSpan="2" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="200" Content="Register" Command="{Binding SubmitUser}"/>
+        <Button Grid.ColumnSpan="2" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="200" Content="Register" Command="{Binding SubmitUser}" Margin="5"/>
 
-        <ListView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding RegisteredUsers}">
+        <ListView Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding RegisteredUsers}" MinHeight="100" Margin="5, 0">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -61,10 +62,10 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Submit ID Cards" Command="{Binding SubmitIdCards}" Margin="5, 2"/>
-            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Distribute ID Cards" Command="{Binding DistributeIdCards}" Margin="5, 2"/>
-            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Clear" Command="{Binding Clear}" Margin="5, 2"/>
+        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Submit ID Cards" Command="{Binding SubmitIdCards}" Background="DeepSkyBlue" Margin="5, 2"/>
+            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Distribute ID Cards" Command="{Binding DistributeIdCards}" Background="DeepSkyBlue" Margin="5, 2"/>
+            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Clear" Command="{Binding Clear}" Background="DeepSkyBlue" Margin="5, 2"/>
         </StackPanel>
     </Grid>
 </Window>
