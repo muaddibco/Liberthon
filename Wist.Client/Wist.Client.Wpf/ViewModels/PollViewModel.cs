@@ -11,12 +11,27 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
 using Wist.Crypto.ConfidentialAssets;
 using System.Collections.ObjectModel;
+using Wist.Client.Common.Interfaces;
+using Wist.Core.States;
+using Wist.Client.Common.Services;
+using System.Windows;
+using Wist.Client.DataModel.Services;
+using Wist.BlockLattice.Core.Enums;
+using Wist.Client.DataModel.Model;
+using Wist.BlockLattice.Core.Parsers;
+using Wist.BlockLattice.Core.DataModel.Transactional;
+using Wist.Client.Common.Entities;
 
 namespace Wist.Client.Wpf.ViewModels
 {
 
     public class PollViewModel : ViewModelBase
     {
+        private readonly IWalletManager _walletManager;
+        private readonly IDataAccessService _dataAccessService;
+        private readonly IBlockParsersRepositoriesRepository _blockParsersRepositoriesRepository;
+        private readonly IClientState _clientState;
+
         #region ============================================ MEMBERS ==================================================
 
         private IPoll _selectedPollBottom;
@@ -26,10 +41,14 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ========================================== CONSTRUCTORS ===============================================
 
-        public PollViewModel()
+        public PollViewModel(IWalletManager walletManager, IStatesRepository statesRepository, IDataAccessService dataAccessService, IBlockParsersRepositoriesRepository blockParsersRepositoriesRepository)
         {
             InitPoll();
             Polls = new ObservableCollection<IPoll>();
+            _walletManager = walletManager;
+            _dataAccessService = dataAccessService;
+            _blockParsersRepositoriesRepository = blockParsersRepositoriesRepository;
+            _clientState = statesRepository.GetInstance<IClientState>();
         }
 
         #endregion
@@ -66,6 +85,12 @@ namespace Wist.Client.Wpf.ViewModels
         public string VoteItemLabel { get; set; }
         public string Id { get; set; }
 
+        public byte[] PublicKey => _clientState.GetPublicKeyHash();
+
+        public ICommand CopyPublicKeyToClipboard => new RelayCommand(() => 
+        {
+            Clipboard.SetText(PublicKey.ToHexString());
+        });
 
         public VoteItem VoteItem { get; set; }
 
@@ -114,11 +139,48 @@ namespace Wist.Client.Wpf.ViewModels
                 RaisePropertyChanged(() => Polls);
             });
 
-        public ICommand UpdateBlockchain =>
+        public ICommand IssuePoll =>
             new RelayCommand(() => 
             {
+                Random random = new Random();
+
+                IPoll poll = Polls[0];
+                foreach (var voteSet in poll.VoteSets)
+                {
+                    _walletManager.IssueAssets($"{poll.Title}|{voteSet.Request}",
+                        voteSet.VoteItems.Select(v => v.Id).ToArray(),
+                        voteSet.VoteItems.Select(v => v.Label).ToArray(), poll.TagId);
+                }
 
             });
+
+        public ICommand DistributePoll => new RelayCommand(() => 
+        {
+            IPoll poll = Polls[0];
+            List<TransactionalIncomingBlock> incomingBlocks = _dataAccessService.GetIncomingBlocksByBlockType(BlockTypes.Transaction_IssueAssets).Where(b => b.TagId == 1).ToList();
+            byte[][] assetIds = poll.VoteSets.SelectMany(v => v.VoteItems.Select(i => i.Id)).ToArray();
+
+            foreach (var item in incomingBlocks)
+            {
+                IBlockParsersRepository blockParsersRepository = _blockParsersRepositoriesRepository.GetBlockParsersRepository(PacketType.Transactional);
+                IBlockParser blockParser = blockParsersRepository.GetInstance(item.BlockType);
+                IssueAssetsBlock issueAssetsBlock = (IssueAssetsBlock)blockParser.Parse(item.Content);
+
+                foreach (string info in issueAssetsBlock.IssuedAssetInfo)
+                {
+                    string[] parts = info.Split('|');
+                    string publicVK = parts[1];
+                    string publicSK = parts[2];
+
+                    ConfidentialAccount confidentialAccount = new ConfidentialAccount { PublicViewKey = publicVK.HexStringToByteArray(), PublicSpendKey = publicSK.HexStringToByteArray() };
+
+                    for (int i = 0; i < assetIds.Length; i++)
+                    {
+                        _walletManager.SendAssetToUtxo(assetIds, i, SelectedPoll.TagId, confidentialAccount);
+                    }
+                }
+            }
+        });
 
         #endregion
 

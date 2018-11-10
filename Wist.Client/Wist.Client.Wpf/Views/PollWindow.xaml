@@ -19,8 +19,14 @@
             
             
             <TabItem Header="Create Polls">
+
                 <StackPanel Orientation="Vertical"  Margin="10">
                     <StackPanel Margin="10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Public Key Hash: " VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding PublicKey, Converter={StaticResource byteArrayToStringConverter}}" VerticalAlignment="Center"/>
+                            <Button Content="Copy" Command="{Binding CopyPublicKeyToClipboard}" Margin="5, 2" VerticalAlignment="Center"/>
+                        </StackPanel>
                         <StackPanel Orientation="Vertical">
                             <Label  Content="What would be the poll subject?"/>
                             <Grid>
@@ -110,9 +116,11 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        
-        <Button Margin="10" Content="Update Blockchain" Background="DeepSkyBlue" Command="{Binding UpdateBlockchain}"/>
-    
+
+        <StackPanel Orientation="Horizontal">
+            <Button Margin="10" Content="Issue Poll" Background="DeepSkyBlue" Command="{Binding IssuePoll}"/>
+            <Button Margin="10" Content="Distribute Poll" Background="DeepSkyBlue" Command="{Binding DistributePoll}"/>
+        </StackPanel>
     </StackPanel>
     
 </Window>

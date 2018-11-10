@@ -298,6 +298,14 @@ namespace Wist.Client.DataModel.Services
             }
         }
 
+        public List<UtxoIncomingBlock> GetIncomingUtxoBlocksByType(ushort blockType)
+        {
+            lock(_sync)
+            {
+                return _dataContext.UtxoIncomingBlocks.Where(b => b.BlockType == blockType).ToList();
+            }
+        }
+
         public void UpdateLastRegistryCombinedBlock(ulong height, byte[] content)
         {
             lock(_sync)

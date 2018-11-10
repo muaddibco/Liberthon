@@ -244,6 +244,15 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Wist.BlockLattice.Core">
+      <HintPath>..\..\..\Wist\Wist.Common\BlockLattice\Wist.BlockLattice.Core\bin\Debug\netstandard2.0\Wist.BlockLattice.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Wist.Crypto">
+      <HintPath>..\..\..\Wist\Wist.Common\Crypto\Wist.Crypto\bin\Debug\netstandard2.0\Wist.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="Wist.Proto">
+      <HintPath>..\..\..\Wist\Wist.Common\Network\Wist.Proto\bin\Debug\netstandard2.0\Wist.Proto.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -262,6 +271,7 @@
     <Compile Include="ViewModels\PollViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegistrationViewModel.cs" />
+    <Compile Include="ViewModels\ResultsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="ViewModels\VoteViewModel.cs" />
     <Compile Include="Views\LoginWindow.xaml.cs">

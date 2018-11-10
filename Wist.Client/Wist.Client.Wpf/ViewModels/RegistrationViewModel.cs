@@ -13,6 +13,10 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
 using Wist.Client.Common.Interfaces;
 using System.Collections.ObjectModel;
+using Wist.Core.States;
+using Wist.Client.Common.Services;
+using Wist.Client.Common.Entities;
+using Wist.Core.ExtensionMethods;
 
 namespace Wist.Client.Wpf.ViewModels
 {
@@ -22,6 +26,7 @@ namespace Wist.Client.Wpf.ViewModels
 
         private readonly IDataAccessService _dataAccessService;
         private readonly IWalletManager _walletManager;
+        private readonly IClientState _clientState;
         private User _user;
 
         private ObservableCollection<User> _registeredUsers;
@@ -30,10 +35,10 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ========================================== CONSTRUCTORS ===============================================
 
-        public RegistrationViewModel(IDataAccessService dataAccessService, IWalletManager walletManager)
+        public RegistrationViewModel(IDataAccessService dataAccessService, IWalletManager walletManager, IStatesRepository statesRepository)
         {
             User = new User();
-
+            _clientState = statesRepository.GetInstance<IClientState>();
             RegisteredUsers = new ObservableCollection<User>();
 
             _dataAccessService = dataAccessService;
@@ -46,7 +51,7 @@ namespace Wist.Client.Wpf.ViewModels
 
         #region ======================================== PUBLIC FUNCTIONS =============================================
 
-        public byte[] MyProperty { get; set; }
+        public byte[] PublicKey => _clientState.GetPublicKeyHash();
 
         public User User
         {
@@ -70,6 +75,8 @@ namespace Wist.Client.Wpf.ViewModels
                     Address = User.Address,
                     FirstName = User.FirstName,
                     LastName = User.LastName,
+                    PublicViewKey = User.PublicViewKey,
+                    PublicSpendKey = User.PublicSpendKey,
                     Id = User.Id
                 });
 
@@ -77,24 +84,37 @@ namespace Wist.Client.Wpf.ViewModels
             });
         }
 
-        public ICommand SubmitIdCards
-        {
-            get => new RelayCommand(() => 
-            {
-                _walletManager.IssueAssets(
-                    "Creation of ID cards",
-                    RegisteredUsers.Select(
-                        r =>
-                        {
-                            byte[] assetId = new byte[32];
-                            Array.Copy(BitConverter.GetBytes(r.Id), 0, assetId, 0, sizeof(uint));
+        public ICommand SubmitIdCards => new RelayCommand(() =>
+                                                   {
+                                                       _walletManager.IssueAssets(
+                                                           "Creation of ID cards",
+                                                           RegisteredUsers.Select(r => GetAssetIdFromUser(r)).ToArray(),
+                                                           RegisteredUsers.Select(
+                                                               r => string.Join("|", string.Join(" ", r.FirstName, r.LastName), r.PublicViewKey, r.PublicSpendKey)).ToArray(), 1);
+                                                   });
 
-                            return assetId;
-                        }).ToArray(),
-                    RegisteredUsers.Select(
-                        r => string.Join(" ", r.FirstName, r.LastName)).ToArray(), 1);
-            });
+        private static byte[] GetAssetIdFromUser(User r)
+        {
+            byte[] assetId = new byte[32];
+            Array.Copy(BitConverter.GetBytes(r.Id), 0, assetId, 0, sizeof(uint));
+
+            return assetId;
         }
+
+        public ICommand DistributeIdCards => new RelayCommand(() => 
+        {
+            byte[][] idcards = RegisteredUsers.Select(u => GetAssetIdFromUser(u)).ToArray();
+            
+            foreach (User user in RegisteredUsers)
+            {
+                byte[] assetId = GetAssetIdFromUser(user);
+                ConfidentialAccount confidentialAccount = new ConfidentialAccount { PublicViewKey =  user.PublicViewKey.HexStringToByteArray(), PublicSpendKey = user.PublicSpendKey.HexStringToByteArray() };
+                int i = Array.FindIndex(idcards, b => b.Equals32(assetId));
+
+                _walletManager.SendAssetToUtxo(idcards, i, 1, confidentialAccount);
+            }
+        });
+
         public ObservableCollection<User> RegisteredUsers { get => _registeredUsers; set => _registeredUsers = value; }
 
         private void InitData()

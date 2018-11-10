@@ -12,6 +12,7 @@ namespace Wist.Client.Common.Services
         bool IsConfidential();
         byte[] GetPublicKey();
         byte[] GetPublicKeyHash();
+        byte[] GetPublicViewKey();
         byte[] GetSecretViewKey();
         byte[] GetPublicSpendKey();
         byte[] GetSecretSpendKey();

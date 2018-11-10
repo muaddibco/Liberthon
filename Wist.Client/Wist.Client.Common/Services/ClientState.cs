@@ -34,6 +34,11 @@ namespace Wist.Client.Common.Services
             _defaultHashCalculation = hashCalculationsRepository.Create(Globals.DEFAULT_HASH);
         }
 
+        public byte[] GetPublicViewKey()
+        {
+            return _publicViewKey;
+        }
+
         public byte[] GetPublicSpendKey()
         {
             return _publicSpendKey;
