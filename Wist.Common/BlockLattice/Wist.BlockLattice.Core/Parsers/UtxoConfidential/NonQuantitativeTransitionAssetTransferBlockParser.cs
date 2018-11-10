@@ -17,7 +17,7 @@ namespace Wist.BlockLattice.Core.Parsers.UtxoConfidential
         {
         }
 
-        public override ushort BlockType => BlockTypes.UtxoConfidential_NonQuantitativeAssetTransfer;
+        public override ushort BlockType => BlockTypes.UtxoConfidential_NonQuantitativeTransitionAssetTransfer;
 
         protected override Memory<byte> ParseUtxoConfidential(ushort version, Memory<byte> spanBody, out UtxoConfidentialBase utxoConfidentialBase)
         {

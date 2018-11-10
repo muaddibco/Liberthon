@@ -163,12 +163,15 @@ namespace Wist.BlockLattice.Core.Handlers
 
             try
             {
-                foreach (ICoreVerifier coreVerifier in _coreVerifiers)
+                if (!(block.PacketType == PacketType.Registry && block.BlockType == BlockTypes.Registry_RegisterUtxoConfidential))
                 {
-                    if (!coreVerifier.VerifyBlock(block))
+                    foreach (ICoreVerifier coreVerifier in _coreVerifiers)
                     {
-                        _log.Error($"Verifier {coreVerifier.GetType().Name} found block invalid: {block.RawData.ToHexString()}");
-                        return false;
+                        if (!coreVerifier.VerifyBlock(block))
+                        {
+                            _log.Error($"Verifier {coreVerifier.GetType().Name} found block invalid: {block.RawData.ToHexString()}");
+                            return false;
+                        }
                     }
                 }
 
@@ -193,10 +196,10 @@ namespace Wist.BlockLattice.Core.Handlers
             {
                 _log.Debug($"Block being dispatched {block.RawData.ToHexString()}");
 
-                if (!ValidateBlock(block))
-                {
-                    return;
-                }
+                //if (!ValidateBlock(block))
+                //{
+                //    return;
+                //}
 
                 try
                 {

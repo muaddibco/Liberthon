@@ -17,7 +17,6 @@
     <StackPanel Orientation="Vertical">
         <TabControl>
             
-            
             <TabItem Header="Create Polls">
 
                 <StackPanel Orientation="Vertical"  Margin="10">
@@ -71,10 +70,27 @@
                     <Button Content="Submit Poll" Background="DeepSkyBlue" Command="{Binding SubmitPoll}"/>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="">
+            <TabItem Header="Calculate Results">
                 <StackPanel Orientation="Vertical">
-                    <Label  Content="What would be the poll subject?"/>
-                    <TextBox Text="{Binding SelectedPoll.Title}"/>
+                    <Label  Content="Results of the Poll"/>
+                    <Button Content="Refresh" Command="{Binding ResultsViewModel.Refresh}" Margin="5" Height="40" Width="100" HorizontalAlignment="Center"/>
+                    <ListView ItemsSource="{Binding ResultsViewModel.Utxos}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Asset Id: "/>
+                                        <TextBlock Text="{Binding AssetId, Converter={StaticResource byteArrayToStringConverter}}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Accepted: "/>
+                                        <TextBlock Text="{Binding Accepted}"/>
+                                    </StackPanel>
+                                    <Button Content="Accept" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListView}}, Path=DataContext.AcceptVote}" CommandParameter="{Binding}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </StackPanel>
             </TabItem>
             
@@ -117,7 +133,7 @@
             </ListView>
         </Grid>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="10">
             <Button Margin="10" Content="Issue Poll" Background="DeepSkyBlue" Command="{Binding IssuePoll}"/>
             <Button Margin="10" Content="Distribute Poll" Background="DeepSkyBlue" Command="{Binding DistributePoll}"/>
         </StackPanel>

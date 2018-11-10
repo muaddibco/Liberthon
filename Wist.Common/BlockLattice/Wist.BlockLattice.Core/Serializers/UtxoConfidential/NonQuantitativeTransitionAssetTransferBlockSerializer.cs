@@ -12,8 +12,8 @@ namespace Wist.BlockLattice.Core.Serializers.UtxoConfidential
     [RegisterExtension(typeof(ISerializer), Lifetime = LifetimeManagement.TransientPerResolve)]
     public class NonQuantitativeTransitionAssetTransferBlockSerializer : UtxoConfidentialSerializerBase<NonQuantitativeTransitionAssetTransferBlock>
     {
-        public NonQuantitativeTransitionAssetTransferBlockSerializer(IUtxoConfidentialCryptoService cryptoService, IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, IHashCalculationsRepository hashCalculationsRepository)
-            : base(PacketType.UtxoConfidential, BlockTypes.UtxoConfidential_NonQuantitativeAssetTransfer, cryptoService, identityKeyProvidersRegistry, hashCalculationsRepository)
+        public NonQuantitativeTransitionAssetTransferBlockSerializer(IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, IHashCalculationsRepository hashCalculationsRepository)
+            : base(PacketType.UtxoConfidential, BlockTypes.UtxoConfidential_NonQuantitativeTransitionAssetTransfer, identityKeyProvidersRegistry, hashCalculationsRepository)
         {
         }
 

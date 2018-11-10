@@ -13,7 +13,7 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -28,10 +28,10 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Grid.ColumnSpan="2" Content="User Registration" HorizontalAlignment="Center" />
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Content="User Registration" />
 
-        <Label Grid.Row="1" Content="ID" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.Id}" />
+        <Label Grid.Row="1" Content="ID" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding User.Id}" Margin="5, 0"/>
 
         <Label Grid.Row="2" Content="First Name" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Text="{Binding User.FirstName}" />
@@ -64,6 +64,7 @@
         <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Submit ID Cards" Command="{Binding SubmitIdCards}" Margin="5, 2"/>
             <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Distribute ID Cards" Command="{Binding DistributeIdCards}" Margin="5, 2"/>
+            <Button HorizontalAlignment="Center" Height="50" Width="200" Content="Clear" Command="{Binding Clear}" Margin="5, 2"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -13,9 +13,9 @@ namespace Wist.BlockLattice.Core.Serializers.Signed.Registry
     [RegisterExtension(typeof(ISerializer), Lifetime = LifetimeManagement.TransientPerResolve)]
     public class RegistryRegisterUtxoConfidentialBlockSerializer : UtxoConfidentialSerializerBase<RegistryRegisterUtxoConfidentialBlock>
     {
-        public RegistryRegisterUtxoConfidentialBlockSerializer(IUtxoConfidentialCryptoService cryptoService, IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, 
+        public RegistryRegisterUtxoConfidentialBlockSerializer(IIdentityKeyProvidersRegistry identityKeyProvidersRegistry, 
             IHashCalculationsRepository hashCalculationsRepository) 
-            : base(PacketType.Registry, BlockTypes.Registry_RegisterUtxoConfidential, cryptoService, identityKeyProvidersRegistry, hashCalculationsRepository)
+            : base(PacketType.Registry, BlockTypes.Registry_RegisterUtxoConfidential, identityKeyProvidersRegistry, hashCalculationsRepository)
         {
         }
 

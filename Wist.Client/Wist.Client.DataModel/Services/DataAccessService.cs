@@ -393,6 +393,14 @@ namespace Wist.Client.DataModel.Services
             }
         }
 
+        public List<TransactionalOutcomingBlock> GetOutcomingTransactionBlocks()
+        {
+            lock(_sync)
+            {
+                return _dataContext.TransactionalOutcomingBlocks.ToList();
+            }
+        }
+
         #region Private Functions
 
         private Identity GetOrAddIdentity(Span<byte> identityKey)

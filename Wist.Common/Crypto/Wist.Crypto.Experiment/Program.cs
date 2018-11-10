@@ -100,6 +100,19 @@ namespace Wist.Crypto.Experiment
 
         static void Main(string[] args)
         {
+            byte[] svk = GetRandomSeed(true);
+            byte[] ssk = GetRandomSeed(true);
+
+            byte[] sok = GetRandomSeed(true);
+
+            byte[] pvk = ConfidentialAssetsHelper.GetTrancationKey(svk);
+            byte[] psk = ConfidentialAssetsHelper.GetTrancationKey(ssk);
+            byte[] pok = ConfidentialAssetsHelper.GetTrancationKey(sok);
+
+            byte[] dk = ConfidentialAssetsHelper.GetDestinationKey(sok, pvk, psk);
+
+            bool resss = ConfidentialAssetsHelper.IsDestinationKeyMine(dk, pok, svk, psk);
+
             TestAssetRangeProofs();
 
             TestValueRangeProof1();

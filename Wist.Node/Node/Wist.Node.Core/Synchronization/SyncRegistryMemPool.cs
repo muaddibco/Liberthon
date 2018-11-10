@@ -136,13 +136,13 @@ namespace Wist.Node.Core.Synchronization
                 }
             }
 
-            RegistryFullBlock transactionsFullBlockMostConfident = null;
+            RegistryFullBlock transactionsFullBlockMostConfident = roundDescriptor.CandidateBlocks?.Values?.FirstOrDefault();
 
-            if (roundDescriptor.CandidateVotes?.Count > 0 )
-            {
-                IKey mostConfidentKey = roundDescriptor.CandidateVotes.OrderByDescending(kv => (double)kv.Value / (double)roundDescriptor.CandidateBlocks[kv.Key].TransactionHeaders.Count).First().Key;
-                transactionsFullBlockMostConfident = roundDescriptor.CandidateBlocks[mostConfidentKey];
-            }
+            //if (roundDescriptor.CandidateVotes?.Count > 0 )
+            //{
+            //    IKey mostConfidentKey = roundDescriptor.CandidateVotes.OrderByDescending(kv => (double)kv.Value / (double)roundDescriptor.CandidateBlocks[kv.Key].TransactionHeaders.Count).First().Key;
+            //    transactionsFullBlockMostConfident = roundDescriptor.CandidateBlocks[mostConfidentKey];
+            //}
 
             if (transactionsFullBlockMostConfident == null)
             {

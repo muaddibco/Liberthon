@@ -44,7 +44,7 @@ namespace Wist.Node.Core.Interaction
             return Task.FromResult(new SyncBlockDescriptor
             {
                 Height = _synchronizationContext?.LastBlockDescriptor.BlockHeight ?? 0,
-                Hash = ByteString.CopyFrom(_synchronizationContext?.LastBlockDescriptor.Hash ?? new byte[Globals.DEFAULT_HASH_SIZE])
+                Hash = ByteString.CopyFrom(_synchronizationContext?.LastBlockDescriptor?.Hash ?? new byte[Globals.DEFAULT_HASH_SIZE])
             });
         }
 

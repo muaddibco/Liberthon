@@ -10,6 +10,7 @@ using Wist.BlockLattice.Core.DataModel.UtxoConfidential;
 using Wist.BlockLattice.Core.Enums;
 using Wist.BlockLattice.Core.Parsers;
 using Wist.BlockLattice.Core.Serializers;
+using Wist.BlockLattice.Core.Serializers.UtxoConfidential;
 using Wist.Client.Common.Entities;
 using Wist.Client.Common.Interfaces;
 using Wist.Client.Common.Services;
@@ -88,10 +89,26 @@ namespace Wist.Client.Common.Communication
             return _networkAdapter.SendTransaction(block, registerBlock);
         }
 
-        public bool SendAssetToUtxo(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver)
+        public bool SendAssetToUtxo(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver, byte[] sk = null)
         {
-            TransferAssetToUtxoBlock block = (TransferAssetToUtxoBlock)CreateTransferAssetToUtxoBlock(assetIds, index, tagId, receiver);
+            TransferAssetToUtxoBlock block = (TransferAssetToUtxoBlock)CreateTransferAssetToUtxoBlock(assetIds, index, tagId, receiver, sk);
             BlockBase registerBlock = CreateRegisterBlock(block, block.DestinationKey);
+
+            return _networkAdapter.SendTransaction(block, registerBlock);
+        }
+
+        public bool SendAssetTransition(byte[] assetId, byte[] transactionKey, byte[] assetCommitment, byte[] prevDestinationKey, ulong tagId, Account target)
+        {
+            UtxoConfidentialBase block = (UtxoConfidentialBase)CreateNonQuantitativeTransitionAssetTransferBlock(target, assetId, transactionKey, assetCommitment, prevDestinationKey, 3, tagId, out byte[] otsk, out int pos);
+            BlockBase registerBlock = CreateUtxoRegisterBlock(block, otsk, pos);
+
+            return _networkAdapter.SendTransaction(block, registerBlock);
+        }
+
+        public bool SendAcceptAsset(byte[] transactionKey, byte[] assetCommitment, byte[] blindingFactor, byte[] assetId, ulong tagId)
+        {
+            TransactionalBlockBase block = (TransactionalBlockBase)CreateAcceptAssetTransitionBlock(transactionKey, assetCommitment, blindingFactor, assetId, tagId);
+            BlockBase registerBlock = CreateRegisterBlock(block, null);
 
             return _networkAdapter.SendTransaction(block, registerBlock);
         }
@@ -132,8 +149,10 @@ namespace Wist.Client.Common.Communication
             return registerBlock;
         }
 
-        public BlockBase CreateUtxoRegisterBlock(UtxoConfidentialBase confidentialBase)
+        public BlockBase CreateUtxoRegisterBlock(UtxoConfidentialBase confidentialBase, byte[] otsk, int actualAssetPos)
         {
+            byte[] msg = ConfidentialAssetsHelper.FastHash256(confidentialBase.RawData.ToArray());
+
             RegistryRegisterUtxoConfidentialBlock registryRegisterUtxoConfidentialBlock = new RegistryRegisterUtxoConfidentialBlock
             {
                 SyncBlockHeight = confidentialBase.SyncBlockHeight,
@@ -146,17 +165,18 @@ namespace Wist.Client.Common.Communication
                 ReferencedBodyHash = _hashCalculation.CalculateHash(confidentialBase.RawData),
                 TransactionPublicKey = confidentialBase.TransactionPublicKey,
                 TagId = confidentialBase.TagId,
-                PublicKeys = confidentialBase.PublicKeys
+                PublicKeys = confidentialBase.PublicKeys,
+                Signatures = ConfidentialAssetsHelper.GenerateRingSignature(msg, confidentialBase.KeyImage.Value.ToArray(), confidentialBase.PublicKeys.Select(p => p.Value.ToArray()).ToArray(), otsk, actualAssetPos)
             };
 
             return registryRegisterUtxoConfidentialBlock;
         }
 
-        private BlockBase CreateTransferAssetToUtxoBlock(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver)
+        private BlockBase CreateTransferAssetToUtxoBlock(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver, byte[] sk = null)
         {
             byte[] assetId = assetIds[index];
 
-            byte[] secretKey = ConfidentialAssetsHelper.GetRandomSeed();
+            byte[] secretKey = sk ?? ConfidentialAssetsHelper.GetRandomSeed();
             byte[] transactionKey = ConfidentialAssetsHelper.GetTrancationKey(secretKey);
             byte[] destinationKey = ConfidentialAssetsHelper.GetDestinationKey(secretKey, receiver.PublicViewKey, receiver.PublicSpendKey);
             byte[] blindingFactor = ConfidentialAssetsHelper.GetRandomSeed();
@@ -210,14 +230,18 @@ namespace Wist.Client.Common.Communication
             return issueAssetsBlock;
         }
 
-        private BlockBase CreateNonQuantitativeTransitionAssetTransferBlock(Account receiver, byte[] assetId, byte[] keyImage, byte[] prevTransactionKey, byte[] prevCommitment, byte[] prevDestinationKey, int ringSize, ulong tagId)
+        private BlockBase CreateNonQuantitativeTransitionAssetTransferBlock(Account receiver, byte[] assetId, byte[] prevTransactionKey, byte[] prevCommitment, byte[] prevDestinationKey, int ringSize, ulong tagId, out byte[] otsk, out int pos)
         {
             if (!_clientState.IsConfidential())
             {
+                otsk = null;
+                pos = -1;
                 return null;
             }
 
             byte[] otskAsset = ConfidentialAssetsHelper.GetOTSK(prevTransactionKey, _clientState.GetSecretViewKey(), _clientState.GetSecretSpendKey());
+            otsk = otskAsset;
+            byte[] keyImage = ConfidentialAssetsHelper.GenerateKeyImage(otskAsset);
             byte[] secretKey = ConfidentialAssetsHelper.GetRandomSeed();
             byte[] transactionKey = ConfidentialAssetsHelper.GetTrancationKey(secretKey);
             byte[] destinationKey = _hashCalculation.CalculateHash(receiver.PublicKey);
@@ -228,7 +252,7 @@ namespace Wist.Client.Common.Communication
 
             Random random = new Random(BitConverter.ToInt32(secretKey, 0));
             GetCommitmentAndProofs(prevCommitment, prevDestinationKey, ringSize, tagId, random, out int actualAssetPos, out byte[][] assetCommitments, out byte[][] assetPubs);
-
+            pos = actualAssetPos;
 
             UtxoUnspentBlock idCardBlock = _dataAccessService.GetUtxoUnspentBlocksByTagId(_idCardTagId).First();
             byte[] otskAffiliation = ConfidentialAssetsHelper.GetOTSK(idCardBlock.TransactionKey, _clientState.GetSecretViewKey(), _clientState.GetSecretSpendKey());
@@ -279,10 +303,10 @@ namespace Wist.Client.Common.Communication
         {
             int totalAssetUtxos = _dataAccessService.GetTotalUtxoOutputsAmount(tagId);
             int[] fakeAssetIndicies = new int[ringSize];
-            actualAssetPos = random.Next(ringSize);
+            actualAssetPos = random.Next(ringSize + 1);
             commitments = new byte[ringSize + 1][];
             pubs = new byte[ringSize + 1][];
-            for (int i = 0; i < ringSize; i++)
+            for (int i = 0; i < ringSize + 1; i++)
             {
                 if (i == actualAssetPos)
                 {
@@ -306,8 +330,41 @@ namespace Wist.Client.Common.Communication
             {
                 return null;
             }
+
+            List<TransactionalOutcomingBlock> outcomingBlocks = _dataAccessService.GetOutcomingTransactionBlocks();
+
+            List<TransactionalOutcomingBlock> acceptanceBlocks = outcomingBlocks?.Where(b => b.BlockType == BlockTypes.Transaction_AcceptAssetTransition).ToList();
+
+            List<byte[]> assetIds = new List<byte[]>();
+            List<ulong> amounts = new List<ulong>();
+
+            if(acceptanceBlocks != null)
+            {
+                TransactionalOutcomingBlock outcomingBlock = acceptanceBlocks.OrderByDescending(b => b.Height).First();
+                AcceptAssetTransitionBlock acceptAsset = (AcceptAssetTransitionBlock)_blockParsersRepositoriesRepository.
+                    GetBlockParsersRepository(PacketType.Transactional).
+                    GetInstance(BlockTypes.Transaction_AcceptAssetTransition).
+                    Parse(outcomingBlock.Content);
+
+                assetIds = new List<byte[]>(acceptAsset.AssetIds);
+                amounts = new List<ulong>(acceptAsset.AssetAmounts);
+            }
+
+            int index = assetIds.FindIndex(a => a.Equals32(assetId));
+            if (index >= 0)
+            {
+                amounts[index]++;
+            }
+            else
+            {
+                assetIds.Add(assetId);
+                amounts.Add(1);
+            }
+
             AcceptAssetTransitionBlock block = new AcceptAssetTransitionBlock
             {
+                AssetIds = assetIds.ToArray(),
+                AssetAmounts = amounts.ToArray(),
                 TagId = tagId,
                 UptodateFunds = 0,
                 AcceptedTransactionKey = transactionKey,
@@ -357,11 +414,6 @@ namespace Wist.Client.Common.Communication
         {
             ISerializer serializer = _signatureSupportSerializersFactory.Create(blockBase);
             serializer.FillBodyAndRowBytes();
-        }
-
-        public bool SendAssetTransition(byte[] assetCommitment, byte[] blindingFactor, Account target)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

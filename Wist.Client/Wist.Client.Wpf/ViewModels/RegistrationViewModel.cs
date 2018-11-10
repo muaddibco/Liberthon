@@ -101,6 +101,11 @@ namespace Wist.Client.Wpf.ViewModels
             return assetId;
         }
 
+        public ICommand Clear => new RelayCommand(() => 
+        {
+            RegisteredUsers.Clear();
+        });
+
         public ICommand DistributeIdCards => new RelayCommand(() => 
         {
             byte[][] idcards = RegisteredUsers.Select(u => GetAssetIdFromUser(u)).ToArray();
