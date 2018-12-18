@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Wist.BlockLattice.Core;
 using Wist.BlockLattice.Core.DataModel;
 using Wist.BlockLattice.Core.DataModel.Registry;
@@ -84,6 +85,27 @@ namespace Wist.Client.Common.Communication
         public bool IssueAssets(string issuanceInfo, byte[][] assetIds, string[] assetInfos, ulong tagId)
         {
             IssueAssetsBlock block = (IssueAssetsBlock)CreateIssueAssetsBlock(issuanceInfo, assetIds, assetInfos, tagId);
+            BlockBase registerBlock = CreateRegisterBlock(block, null);
+
+            return _networkAdapter.SendTransaction(block, registerBlock);
+        }
+
+        public bool IssueAssets(ICollection<KeyValuePair<string, string>> assetDetails, string[] asstetId, ulong tagId = 0)
+        {
+            byte[][] arrays = new byte[assetDetails.Count][];
+
+            List<KeyValuePair<string, string>> pairs = assetDetails.ToList();
+
+            for (int i = 0; i < assetDetails.Count; i++)
+            {
+                KeyValuePair<string, string> pair = pairs[i];
+
+                byte[] key  = Encoding.ASCII.GetBytes($"key: {pair.Key}@");
+                byte[] value = Encoding.ASCII.GetBytes($"value: {pair.Value}");
+
+                arrays[i] = key.Concat(value).ToArray();
+            }
+            IssueAssetsBlock block = (IssueAssetsBlock)CreateIssueAssetsBlock(null, arrays, asstetId, tagId);
             BlockBase registerBlock = CreateRegisterBlock(block, null);
 
             return _networkAdapter.SendTransaction(block, registerBlock);
