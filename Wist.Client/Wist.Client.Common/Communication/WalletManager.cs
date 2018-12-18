@@ -90,22 +90,19 @@ namespace Wist.Client.Common.Communication
             return _networkAdapter.SendTransaction(block, registerBlock);
         }
 
-        public bool IssueAssets(ICollection<KeyValuePair<string, string>> assetDetails, string[] asstetId, ulong tagId = 0)
+        public bool IssueAssets(ICollection<KeyValuePair<string, string>> assetDetails, byte[] asstetId, ulong tagId = 0)
         {
-            byte[][] arrays = new byte[assetDetails.Count][];
+            byte[][] arrays = new byte[1][];
 
-            List<KeyValuePair<string, string>> pairs = assetDetails.ToList();
+            arrays[0] = asstetId;
 
-            for (int i = 0; i < assetDetails.Count; i++)
+            List<string> assetInfosList = new List<string>();
+
+            assetDetails.ToList().ForEach(pair =>
             {
-                KeyValuePair<string, string> pair = pairs[i];
-
-                byte[] key  = Encoding.ASCII.GetBytes($"key: {pair.Key}@");
-                byte[] value = Encoding.ASCII.GetBytes($"value: {pair.Value}");
-
-                arrays[i] = key.Concat(value).ToArray();
-            }
-            IssueAssetsBlock block = (IssueAssetsBlock)CreateIssueAssetsBlock(null, arrays, asstetId, tagId);
+                assetInfosList.Add($"key: {pair.Key}@value: {pair.Value}|");
+            });
+            IssueAssetsBlock block = (IssueAssetsBlock)CreateIssueAssetsBlock(null, arrays, assetInfosList.ToArray(), tagId);
             BlockBase registerBlock = CreateRegisterBlock(block, null);
 
             return _networkAdapter.SendTransaction(block, registerBlock);

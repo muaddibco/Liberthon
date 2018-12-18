@@ -16,6 +16,8 @@ namespace Wist.Client.Common.Interfaces
 
         bool SendFunds(uint amount, Account receiver);
 
+        bool IssueAssets(ICollection<KeyValuePair<string, string>> assetDetails, string[] asstetId, ulong tagId = 0);
+
         bool IssueAssets(string issuanceInfo, byte[][] assetIds, string[] assetInfos, ulong tagId);
 
         bool SendAssetToUtxo(byte[][] assetIds, int index, ulong tagId, ConfidentialAccount receiver, byte[] sk = null);
